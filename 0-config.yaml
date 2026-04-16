@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cnpj-config
+  annotations:
+    avp.amazee.io/path: "secrets/data/cnpj-manager/config" # Caminho no seu Vault
+data:
+  DB_URL: "jdbc:oracle:thin:@oracle-service:1521/FREEPDB1"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cnpj-secrets
+  annotations:
+    avp.amazee.io/path: "secrets/data/cnpj-manager/credentials"
+type: Opaque
+stringData:
+  DB_USER: "<db_user>"
+  DB_PASSWORD: "<db_password>"
+  ORACLE_PASSWORD: "<oracle_password>"
+  ADMIN_PASSWORD: "<admin_password>"

@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cnpj-api
+  template:
+    metadata:
+      labels:
+        app: cnpj-api
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: cnpj-manager-api
+          image: gelleres/cnpj-manager-api:29c6578bc50ea64deb469d976d5e10206de3e361
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+              ephemeral-storage: "512Mi"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+              ephemeral-storage: "1Gi"
+          env:
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: cnpj-config
+                  key: DB_URL
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: cnpj-secrets
+                  key: DB_USER
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cnpj-secrets
+                  key: DB_PASSWORD
+            - name: APP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cnpj-secrets
+                  key: ADMIN_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-service
+spec:
+  selector:
+    app: cnpj-api
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
