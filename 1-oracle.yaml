@@ -23,6 +23,9 @@ spec:
       labels:
         app: oracle-db
     spec:
+      securityContext:
+        fsGroup: 54321
+        runAsUser: 54321
       automountServiceAccountToken: false
       containers:
         - name: oracle-database
