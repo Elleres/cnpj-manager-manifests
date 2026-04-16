@@ -23,9 +23,15 @@ spec:
       labels:
         app: oracle-db
     spec:
-      securityContext:
-        fsGroup: 54321
-        runAsUser: 54321
+      initContainers:
+        - name: fix-permissions
+          image: busybox
+          command: ["sh", "-c", "chown -R 54321:54321 /opt/oracle/oradata"]
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: oracle-data
+              mountPath: /opt/oracle/oradata
       automountServiceAccountToken: false
       containers:
         - name: oracle-database
